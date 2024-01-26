@@ -6,7 +6,7 @@ import re
 
 
 class Mybutton(Button):
-    def __init__(self, master, x, y, number, *args, **kwargs):
+    def __init__(self, master, x, y, number=0, *args, **kwargs):
         super(Mybutton, self).__init__(
             master, width=3, font="Dimkin 15 bold", *args, **kwargs
         )
