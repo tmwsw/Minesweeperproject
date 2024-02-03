@@ -60,9 +60,17 @@ class Saper:
                 btn.config(text=btn.number)
                 btn.grid(row=i, column=j, stick="NWES")
                 count += 1
+        for i in range(1, self.ROW + 1):
+            Grid.rowconfigure(self.window, i, weight=1)
+        for i in range(1, self.COLUMMS + 1):
+            Grid.rowconfigure(self.window, i, weight=1)
 
-    def create_stat_win():
-        pass
+        self.lbl_time = Label(text="click button")
+        self.lbl_time.grid(row=0, column=1, columnspan=(self.COLUMMS // 2))
+        self.lbl_mine = Label(text=f"Flags {self.count_flag}")
+        self.lbl_mine.grid(
+            row=0, column=(self.COLUMMS // 2) + 1, columnspan=(self.COLUMMS // 2)
+        )
 
     def create_setting_win(self):
         def change_lvl(mines, row, col):
@@ -128,11 +136,39 @@ class Saper:
         self.MINES = int(mines.get())
         self.reload()
 
+    def create_stat_win(self):
+        with open("logs.txt", "r") as logs:
+            text = logs.read()
+            list_game_time = re.findall(r":(\w+)", text)
+            list_game_result = re.findall(r"-(\w+)", text)
+        time = 0
+        for i in list_game_time:
+            time += int(i)
+        time_avg = time / len(list_game_time)
+        win_avg = list_game_result.count("win") / len(list_game_result)
+        showinfo(
+            "Statistics",
+            f"You played {len(list_game_result)}\n"
+            f"You win rating {win_avg * 100}%\n"
+            f"Average game time {time_avg:.2f} sec",
+        )
+
     def right_click(self):
         pass
 
     def click(self, clicked_button: Mybutton):
-        pass
+        print(clicked_button.number)
+        self.time_start = time.time()
+        self.tick()
+        with open("logs.txt", "a") as logs:
+            logs.write(f"result-win time:{random.randrange(20)}\n")
+
+    def tick(self):
+        if self.IS_GAMEROVER:
+            return
+        timer = time.time() - self.time_start
+        self.lbl_time.config(text=f"Time:{timer:.0f}")
+        self.lbl_time.after(500, self.tick)
 
     def start(self):
         self.create_widgets()
