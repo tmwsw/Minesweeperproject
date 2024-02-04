@@ -28,6 +28,7 @@ class Saper:
     COLUMMS = 5
     MINES = 5
     IS_GAMEROVER = False
+    IS_FIRST_CLICK = True
 
     def __init__(self):
         self.buttons = []
@@ -35,7 +36,7 @@ class Saper:
             temp = []
             for j in range(self.COLUMMS + 2):
                 btn = Mybutton(self.window, x=i, y=j)
-                btn.config(text="b", command=lambda button=btn: self.click(button))
+                btn.config(command=lambda button=btn: self.click(button))
                 btn.bind("<Button - 3>", self.right_click)
                 temp.append(btn)
             self.buttons.append(temp)
@@ -57,7 +58,6 @@ class Saper:
             for j in range(1, self.COLUMMS + 1):
                 btn = self.buttons[i][j]
                 btn.number = count
-                btn.config(text=btn.number)
                 btn.grid(row=i, column=j, stick="NWES")
                 count += 1
         for i in range(1, self.ROW + 1):
@@ -124,6 +124,7 @@ class Saper:
         self.__init__()
         self.create_widgets()
         self.IS_GAMEROVER = False
+        self.IS_FIRST_CLICK = True
 
     def change_settings(self, row: Entry, column: Entry, mines: Entry):
         try:
@@ -158,10 +159,49 @@ class Saper:
 
     def click(self, clicked_button: Mybutton):
         print(clicked_button.number)
-        self.time_start = time.time()
-        self.tick()
+
         with open("logs.txt", "a") as logs:
             logs.write(f"result-win time:{random.randrange(20)}\n")
+        if self.IS_GAMEROVER:
+            return
+        if self.IS_FIRST_CLICK:
+            self.time_start = time.time()
+            self.insert_mines(clicked_button.number)
+            self.print_mines()
+            self.tick()
+            self.IS_FIRST_CLICK = False
+        if not clicked_button.is_mine:
+            clicked_button.config(text=0, disabledforeground="Black")
+            clicked_button.is_open = True
+        else:
+            clicked_button.config(text="*", disabledforeground="Black")
+            clicked_button.is_open = True
+        clicked_button.config(foreground="Black", relief=SUNKEN)
+
+    def get_mine_places(self, exlude_number: int):
+        indexes = list(range(1, self.COLUMMS * self.ROW + 1))
+        indexes.remove(exlude_number)
+        random.shuffle(indexes)
+        return indexes[: self.MINES]
+
+    def insert_mines(self, number: int):
+        self.index_mines = self.get_mine_places(number)
+        print(f"mines in {self.index_mines}")
+        for i in range(1, self.ROW + 1):
+            for j in range(1, self.COLUMMS + 1):
+                btn = self.buttons[i][j]
+                if btn.number in self.index_mines:
+                    btn.is_mine = True
+
+    def print_mines(self):
+        for i in range(1, self.ROW + 1):
+            for j in range(1, self.COLUMMS + 1):
+                btn = self.buttons[i][j]
+                if btn.is_mine:
+                    print("b", end="")
+                else:
+                    print(btn.count_bomb, end="")
+            print()
 
     def tick(self):
         if self.IS_GAMEROVER:
