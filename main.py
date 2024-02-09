@@ -3,6 +3,19 @@ import random
 from tkinter.messagebox import showinfo, showerror
 import time
 import re
+from PIL import ImageTk, Image
+
+colors = {
+    0: "white",  # белый
+    1: "#331fcf",  # синий
+    2: "#5acf1f",  # зеленый
+    3: "#c0cf1f",  # чуть желтый
+    4: "#cfa61f",  # чуть оранжевый
+    5: "#cf1f91",  # розовый
+    6: "#8f1171",  # чуть фиолетовый
+    7: "#b01c0e",  # красный
+    8: "#aba130",  # черный
+}
 
 
 class Mybutton(Button):
@@ -29,6 +42,8 @@ class Saper:
     MINES = 5
     IS_GAMEROVER = False
     IS_FIRST_CLICK = True
+    bomb_color = ImageTk.PhotoImage(Image.open("image/bomb-color.png"))
+    bomb_defused = ImageTk.PhotoImage(Image.open("image/bomb-defused.png"))
 
     def __init__(self):
         self.buttons = []
@@ -154,35 +169,126 @@ class Saper:
             f"Average game time {time_avg:.2f} sec",
         )
 
-    def right_click(self):
-        pass
+    def right_click(self, event):
+        cur_btn = event.widget
+        print(f"press {cur_btn.number}")
+        if self.IS_GAMEROVER:
+            return
+        if self.IS_FIRST_CLICK:
+            return
+        list_mines_pos = sorted(self.index_mines)
+        if not cur_btn.is_flag and not cur_btn.is_open:
+            if self.count_flag == 0:
+                return
+            cur_btn["command"] = 0
+            cur_btn.is_flag = True
+            cur_btn["text"] = "F"
+            cur_btn["image"] = self.bomb_defused
+            self.count_flag -= 1
+            self.flag_position.append(cur_btn.number)
+        elif cur_btn.is_flag and not cur_btn.is_open:
+            cur_btn.is_flag = False
+            cur_btn["text"] = ""
+            cur_btn["image"] = ""
+            cur_btn["command"] = lambda button=cur_btn: self.click(button)
+            self.count_flag += 1
+            self.flag_position.remove(cur_btn.number)
+
+        if list_mines_pos == sorted(self.flag_position):
+            showinfo("Win", f"You win\n" f"You spent {self.timer:.0f} sec")
+            with open("logs.txt", "a") as logs:
+                logs.write(f"result-win time:{self.timer:.0f} sec\n")
+            self.reload()
+        self.lbl_mine.config(text=f"Flags {self.count_flag}")
+
+    def count_mines_buttons(self):
+        for i in range(1, self.ROW + 1):
+            for j in range(1, self.COLUMMS + 1):
+                btn = self.buttons[i][j]
+                count_bomb = 0
+                if not btn.is_mine:
+                    for row_dx in [-1, 0, 1]:
+                        for col_dx in [-1, 0, 1]:
+                            neighbour = self.buttons[i + row_dx][j + col_dx]
+                            if neighbour.is_mine:
+                                count_bomb += 1
+                btn.count_bomb = count_bomb
 
     def click(self, clicked_button: Mybutton):
-        print(clicked_button.number)
-
-        with open("logs.txt", "a") as logs:
-            logs.write(f"result-win time:{random.randrange(20)}\n")
         if self.IS_GAMEROVER:
             return
         if self.IS_FIRST_CLICK:
             self.time_start = time.time()
             self.insert_mines(clicked_button.number)
+            self.count_mines_buttons()
             self.print_mines()
             self.tick()
             self.IS_FIRST_CLICK = False
-        if not clicked_button.is_mine:
-            clicked_button.config(text=0, disabledforeground="Black")
+
+        if clicked_button.is_mine:
+            clicked_button.config(text="*", bg="red", disabledforeground="black")
             clicked_button.is_open = True
+            self.IS_GAMEROVER = True
+            for i in range(1, self.ROW + 1):
+                for j in range(1, self.COLUMMS + 1):
+                    btn = self.buttons[i][j]
+                    if btn.is_mine:
+                        if btn.is_flag:
+                            btn["image"] = self.bomb_defused
+                            btn["bg"] = "lightgreen"
+                        else:
+                            btn["image"] = self.bomb_color
+            showinfo(
+                "Game over",
+                f"You lose \n"
+                f"You spent {self.timer:.0f} sec \n"
+                f"and find {self.MINES - self.count_flag} mines",
+            )
+            with open("logs.txt", "a") as logs:
+                logs.write(f"result-loss time:{self.timer:.0f} sec\n")
+            # self.open_all_buttons()
         else:
-            clicked_button.config(text="*", disabledforeground="Black")
-            clicked_button.is_open = True
-        clicked_button.config(foreground="Black", relief=SUNKEN)
+            color = colors.get(clicked_button.count_bomb, "black")
+            if clicked_button.count_bomb:
+                clicked_button.config(
+                    text=clicked_button.count_bomb, disabledforeground=color
+                )
+                clicked_button.is_open = True
+            else:
+                self.breadth_first_search(clicked_button)
+        color = colors.get(clicked_button.count_bomb, "black")
+        clicked_button.config(foreground="black", relief=SUNKEN)
 
     def get_mine_places(self, exlude_number: int):
         indexes = list(range(1, self.COLUMMS * self.ROW + 1))
         indexes.remove(exlude_number)
         random.shuffle(indexes)
         return indexes[: self.MINES]
+
+    def breadth_first_search(self, btn: Mybutton):
+        queue = [btn]
+        while queue:
+            cur_btn = queue.pop()
+            color = colors.get(cur_btn.count_bomb, "black")
+            if cur_btn.count_bomb:
+                cur_btn.config(text=cur_btn.count_bomb, disabledforeground=color)
+            else:
+                cur_btn.config(text="", disabledforeground=color)
+            cur_btn.config(state="disabled", relief=SUNKEN)
+            cur_btn.is_open = True
+            if cur_btn.count_bomb == 0:
+                x, y = cur_btn.x, cur_btn.y
+                for dx in [-1, 0, 1]:
+                    for dy in [-1, 0, 1]:
+                        next_btn = self.buttons[x + dx][y + dy]
+                        if (
+                            not next_btn.is_open
+                            and not next_btn.is_flag
+                            and 1 <= next_btn.x <= self.ROW
+                            and 1 <= next_btn.y <= self.COLUMMS
+                            and next_btn not in queue
+                        ):
+                            queue.append(next_btn)
 
     def insert_mines(self, number: int):
         self.index_mines = self.get_mine_places(number)
@@ -192,6 +298,16 @@ class Saper:
                 btn = self.buttons[i][j]
                 if btn.number in self.index_mines:
                     btn.is_mine = True
+
+    def open_all_buttons(self):
+        for i in range(1, self.ROW + 1):
+            for j in range(1, self.COLUMMS + 1):
+                btn = self.buttons[i][j]
+                if btn.is_mine:
+                    btn.config(text="*", bg="red", disabledforeground="black")
+                elif btn.count_bomb in colors:
+                    color = colors.get(btn.count_bomb, "black")
+                    btn.config(text=btn.count_bomb, foreground="black")
 
     def print_mines(self):
         for i in range(1, self.ROW + 1):
@@ -206,8 +322,8 @@ class Saper:
     def tick(self):
         if self.IS_GAMEROVER:
             return
-        timer = time.time() - self.time_start
-        self.lbl_time.config(text=f"Time:{timer:.0f}")
+        self.timer = time.time() - self.time_start
+        self.lbl_time.config(text=f"Time:{self.timer:.0f}")
         self.lbl_time.after(500, self.tick)
 
     def start(self):
