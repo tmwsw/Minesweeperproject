@@ -34,7 +34,7 @@ class Mybutton(Button):
         self.is_flag = False
 
 
-class Saper:
+class Minesweepper:
     window = Tk()
     window.title("Saper")
     ROW = 5
@@ -42,8 +42,8 @@ class Saper:
     MINES = 5
     IS_GAMEROVER = False
     IS_FIRST_CLICK = True
-    bomb_color = ImageTk.PhotoImage(Image.open("image/bomb-color.png"))
-    bomb_defused = ImageTk.PhotoImage(Image.open("image/bomb-defused.png"))
+    bomb_color = ImageTk.PhotoImage(Image.open("image\\bomb-color.png"))
+    bomb_defused = ImageTk.PhotoImage(Image.open("image\\bomb-defused.png"))
 
     def __init__(self):
         self.buttons = []
@@ -171,7 +171,6 @@ class Saper:
 
     def right_click(self, event):
         cur_btn = event.widget
-        print(f"press {cur_btn.number}")
         if self.IS_GAMEROVER:
             return
         if self.IS_FIRST_CLICK:
@@ -221,7 +220,6 @@ class Saper:
             self.time_start = time.time()
             self.insert_mines(clicked_button.number)
             self.count_mines_buttons()
-            self.print_mines()
             self.tick()
             self.IS_FIRST_CLICK = False
 
@@ -331,5 +329,5 @@ class Saper:
         self.window.mainloop()
 
 
-game = Saper()
+game = Minesweepper()
 game.start()
