@@ -290,7 +290,6 @@ class Minesweepper:
 
     def insert_mines(self, number: int):
         self.index_mines = self.get_mine_places(number)
-        print(f"mines in {self.index_mines}")
         for i in range(1, self.ROW + 1):
             for j in range(1, self.COLUMMS + 1):
                 btn = self.buttons[i][j]

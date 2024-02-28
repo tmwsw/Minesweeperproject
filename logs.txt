@@ -37,3 +37,15 @@ result-loss time:1 sec
 result-loss time:5 sec
 result-win time:4 sec
 result-win time:6 sec
+result-loss time:0 sec
+result-loss time:1 sec
+result-loss time:2 sec
+result-loss time:3 sec
+result-loss time:1 sec
+result-loss time:2 sec
+result-win time:10 sec
+result-loss time:1 sec
+result-loss time:1 sec
+result-loss time:4 sec
+result-loss time:10 sec
+result-loss time:2 sec
