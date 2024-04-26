@@ -172,7 +172,7 @@ class Minesweepper:
         win_avg = list_game_result.count("win") / len(list_game_result)
         showinfo(
             "Статистика",
-            f"Сыграно {len(list_game_result)}\n"
+            f"Сыграно {len(list_game_result)} игр\n"
             f"Твой рейтинг {win_avg * 100}%\n"
             f"Средняя время игры {time_avg:.2f} сек",
         )
