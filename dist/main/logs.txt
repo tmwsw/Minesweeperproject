@@ -1,9 +1,3 @@
-result-loss time:5 sec
-result-loss time:2 sec
-result-loss time:6 sec
 result-loss time:1 sec
-result-loss time:4 sec
-result-loss time:13 sec
-result-loss time:6 sec
-result-loss time:2 sec
-result-loss time:4 sec
+result-loss time:1 sec
+result-loss time:1 sec
