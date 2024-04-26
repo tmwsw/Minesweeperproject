@@ -251,7 +251,7 @@ class Minesweepper:
             showinfo(
                 "Игра окончена",
                 f"Ты проиграл \n"
-                f"Ты потратил {self.timer:.0f} sec \n"
+                f"Ты потратил {self.timer:.0f} сек \n"
                 f"и нашёл {self.MINES - self.count_flag} мин",
             )
             with open("logs.txt", "a") as logs:
