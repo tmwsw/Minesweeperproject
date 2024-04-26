@@ -36,7 +36,7 @@ class Mybutton(Button):
 
 class Minesweepper:
     window = Tk()
-    window.title("Saper")
+    window.title("Сапер")
     ROW = 5
     COLUMMS = 5
     MINES = 5
@@ -65,11 +65,11 @@ class Minesweepper:
         menubar = Menu(self.window)
         self.window.config(menu=menubar)
         settings_menu = Menu(menubar, tearoff=0)
-        settings_menu.add_command(label="Start", command=self.reload)
-        settings_menu.add_command(label="Settings", command=self.create_setting_win)
-        settings_menu.add_command(label="Statistics", command=self.create_stat_win)
-        settings_menu.add_command(label="Exit", command=self.window.destroy)
-        menubar.add_cascade(label="Menu", menu=settings_menu)
+        settings_menu.add_command(label="Начать", command=self.reload)
+        settings_menu.add_command(label="Настройки", command=self.create_setting_win)
+        settings_menu.add_command(label="Статистика", command=self.create_stat_win)
+        settings_menu.add_command(label="Выйти из игры", command=self.window.destroy)
+        menubar.add_cascade(label="Меню", menu=settings_menu)
 
         for i in range(1, self.ROW + 1):
             for j in range(1, self.COLUMMS + 1):
@@ -82,9 +82,9 @@ class Minesweepper:
         for i in range(1, self.COLUMMS + 1):
             Grid.rowconfigure(self.window, i, weight=1)
 
-        self.lbl_time = Label(text="click button")
+        self.lbl_time = Label(text="Жми")
         self.lbl_time.grid(row=0, column=1, columnspan=(self.COLUMMS // 2))
-        self.lbl_mine = Label(text=f"Flags {self.count_flag}")
+        self.lbl_mine = Label(text=f"Флажки: {self.count_flag}")
         self.lbl_mine.grid(
             row=0, column=(self.COLUMMS // 2) + 1, columnspan=(self.COLUMMS // 2)
         )
@@ -101,10 +101,10 @@ class Minesweepper:
             mines_entry.insert(0, mines)
 
         win_settings = Toplevel(self.window)
-        win_settings.title("Settings")
-        Label(win_settings, text="Count row").grid(row=0, column=0)
-        Label(win_settings, text="Count column").grid(row=1, column=0)
-        Label(win_settings, text="Count mines").grid(row=2, column=0)
+        win_settings.title("Настройки")
+        Label(win_settings, text="Ряды").grid(row=0, column=0)
+        Label(win_settings, text="Столбцы").grid(row=1, column=0)
+        Label(win_settings, text="Мины").grid(row=2, column=0)
 
         row_entry = Entry(win_settings)
         row_entry.insert(0, self.ROW)
@@ -118,23 +118,23 @@ class Minesweepper:
 
         save_btn = Button(
             win_settings,
-            text="Apply",
+            text="Применить",
             command=lambda: self.change_settings(row_entry, column_entry, mines_entry),
         )
         save_btn.grid(row=4, column=1, padx=20, pady=20)
 
         easy_btn = Button(
-            win_settings, text="Easy", command=lambda: change_lvl(5, 6, 6)
+            win_settings, text="Легко", command=lambda: change_lvl(5, 6, 6)
         )
         easy_btn.grid(row=3, column=0)
 
         normal_btn = Button(
-            win_settings, text="Normal", command=lambda: change_lvl(10, 10, 10)
+            win_settings, text="Нормально", command=lambda: change_lvl(10, 10, 10)
         )
         normal_btn.grid(row=3, column=1)
 
         hard_btn = Button(
-            win_settings, text="Hard", command=lambda: change_lvl(35, 10, 25)
+            win_settings, text="Тяжело", command=lambda: change_lvl(35, 10, 25)
         )
         hard_btn.grid(row=3, column=2)
 
@@ -171,10 +171,10 @@ class Minesweepper:
         time_avg = time / len(list_game_time)
         win_avg = list_game_result.count("win") / len(list_game_result)
         showinfo(
-            "Statistics",
-            f"You played {len(list_game_result)}\n"
-            f"You win rating {win_avg * 100}%\n"
-            f"Average game time {time_avg:.2f} sec",
+            "Статистика",
+            f"Сыграно {len(list_game_result)}\n"
+            f"Твой рейтинг {win_avg * 100}%\n"
+            f"Средняя время игры {time_avg:.2f} сек",
         )
 
     def right_click(
@@ -204,7 +204,7 @@ class Minesweepper:
             self.flag_position.remove(cur_btn.number)
 
         if list_mines_pos == sorted(self.flag_position):
-            showinfo("Win", f"You win\n" f"You spent {self.timer:.0f} sec")
+            showinfo("Победа", f"Ты выиграл\n" f"Ты потратил {self.timer:.0f} сек")
             with open("logs.txt", "a") as logs:
                 logs.write(f"result-win time:{self.timer:.0f} sec\n")
             self.reload()
@@ -223,7 +223,9 @@ class Minesweepper:
                                 count_bomb += 1
                 btn.count_bomb = count_bomb
 
-    def click(self, clicked_button: Mybutton): # Обрабатывает события левого клика на кнопках.
+    def click(
+        self, clicked_button: Mybutton
+    ):  # Обрабатывает события левого клика на кнопках.
         if self.IS_GAMEROVER:
             return
         if self.IS_FIRST_CLICK:
@@ -247,10 +249,10 @@ class Minesweepper:
                         else:
                             btn["image"] = self.bomb_color
             showinfo(
-                "Game over",
-                f"You lose \n"
-                f"You spent {self.timer:.0f} sec \n"
-                f"and find {self.MINES - self.count_flag} mines",
+                "Игра окончена",
+                f"Ты проиграл \n"
+                f"Ты потратил {self.timer:.0f} sec \n"
+                f"и нашёл {self.MINES - self.count_flag} мин",
             )
             with open("logs.txt", "a") as logs:
                 logs.write(f"result-loss time:{self.timer:.0f} sec\n")
@@ -267,13 +269,17 @@ class Minesweepper:
         color = colors.get(clicked_button.count_bomb, "black")
         clicked_button.config(foreground="black", relief=SUNKEN)
 
-    def get_mine_places(self, exlude_number: int): # Генерирует случайные позиции для размещения мин.
+    def get_mine_places(
+        self, exlude_number: int
+    ):  # Генерирует случайные позиции для размещения мин.
         indexes = list(range(1, self.COLUMMS * self.ROW + 1))
         indexes.remove(exlude_number)
         random.shuffle(indexes)
         return indexes[: self.MINES]
 
-    def breadth_first_search(self, btn: Mybutton): # Реализует алгоритм обхода в ширину для открытия смежных клеток.
+    def breadth_first_search(
+        self, btn: Mybutton
+    ):  # Реализует алгоритм обхода в ширину для открытия смежных клеток.
         queue = [btn]
         while queue:
             cur_btn = queue.pop()
@@ -298,7 +304,7 @@ class Minesweepper:
                         ):
                             queue.append(next_btn)
 
-    def insert_mines(self, number: int): # Вставляет мины в игровое поле.
+    def insert_mines(self, number: int):  # Вставляет мины в игровое поле.
         self.index_mines = self.get_mine_places(number)
         for i in range(1, self.ROW + 1):
             for j in range(1, self.COLUMMS + 1):
@@ -306,7 +312,7 @@ class Minesweepper:
                 if btn.number in self.index_mines:
                     btn.is_mine = True
 
-    def open_all_buttons(self): # Раскрывает все кнопки в конце игры.
+    def open_all_buttons(self):  # Раскрывает все кнопки в конце игры.
         for i in range(1, self.ROW + 1):
             for j in range(1, self.COLUMMS + 1):
                 btn = self.buttons[i][j]
@@ -316,7 +322,7 @@ class Minesweepper:
                     color = colors.get(btn.count_bomb, "black")
                     btn.config(text=btn.count_bomb, foreground="black")
 
-    def print_mines(self): # Выводит размещение мин для отладки.
+    def print_mines(self):  # Выводит размещение мин для отладки.
         for i in range(1, self.ROW + 1):
             for j in range(1, self.COLUMMS + 1):
                 btn = self.buttons[i][j]
@@ -326,14 +332,16 @@ class Minesweepper:
                     print(btn.count_bomb, end="")
             print()
 
-    def tick(self): # Обновляет таймер игры
+    def tick(self):  # Обновляет таймер игры
         if self.IS_GAMEROVER:
             return
         self.timer = time.time() - self.time_start
-        self.lbl_time.config(text=f"Time:{self.timer:.0f}")
+        self.lbl_time.config(text=f"Время: {self.timer:.0f}")
         self.lbl_time.after(500, self.tick)
 
-    def start(self): # Запускает игру, создавая интерфейс и запуская главный цикл Tkinter.
+    def start(
+        self,
+    ):  # Запускает игру, создавая интерфейс и запуская главный цикл Tkinter.
         self.create_widgets()
         self.window.mainloop()
 
