@@ -1,0 +1,2 @@
+result-loss time:1 sec
+result-loss time:8 sec

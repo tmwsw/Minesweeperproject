@@ -68,7 +68,7 @@ class Minesweepper:
         settings_menu.add_command(label="Начать", command=self.reload)
         settings_menu.add_command(label="Настройки", command=self.create_setting_win)
         settings_menu.add_command(label="Статистика", command=self.create_stat_win)
-        settings_menu.add_command(label="Выйти из игры", command=self.window.destroy)
+        settings_menu.add_command(label="Выход", command=self.window.destroy)
         menubar.add_cascade(label="Меню", menu=settings_menu)
 
         for i in range(1, self.ROW + 1):
