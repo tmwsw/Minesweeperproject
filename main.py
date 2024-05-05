@@ -37,6 +37,7 @@ class Mybutton(Button):
 class Minesweepper:
     window = Tk()
     window.title("Сапер")
+    window.resizable(False, False)
     ROW = 5
     COLUMMS = 5
     MINES = 5
