@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 from tkinter import *
 import random
 from tkinter.messagebox import showinfo, showerror
