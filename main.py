@@ -38,8 +38,8 @@ class Minesweepper:
     window = Tk()
     window.title("Сапер")
     window.resizable(False, False)
-    ROW = 5
-    COLUMMS = 5
+    ROW = 6
+    COLUMMS = 6
     MINES = 5
     IS_GAMEROVER = False
     IS_FIRST_CLICK = True
@@ -103,6 +103,7 @@ class Minesweepper:
 
         win_settings = Toplevel(self.window)
         win_settings.title("Настройки")
+        win_settings.geometry("230x255")
         Label(win_settings, text="Ряды").grid(row=0, column=0)
         Label(win_settings, text="Столбцы").grid(row=1, column=0)
         Label(win_settings, text="Мины").grid(row=2, column=0)
