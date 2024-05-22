@@ -324,16 +324,6 @@ class Minesweepper:
                     color = colors.get(btn.count_bomb, "black")
                     btn.config(text=btn.count_bomb, foreground="black")
 
-    def print_mines(self):  # Выводит размещение мин для отладки.
-        for i in range(1, self.ROW + 1):
-            for j in range(1, self.COLUMMS + 1):
-                btn = self.buttons[i][j]
-                if btn.is_mine:
-                    print("b", end="")
-                else:
-                    print(btn.count_bomb, end="")
-            print()
-
     def tick(self):  # Обновляет таймер игры
         if self.IS_GAMEROVER:
             return
