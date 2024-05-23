@@ -2,7 +2,7 @@ from tkinter import *
 import random
 from tkinter.messagebox import showinfo, showerror
 import time
-import re
+from re import findall
 from PIL import ImageTk, Image
 
 colors = {
@@ -165,8 +165,8 @@ class Minesweepper:
     def create_stat_win(self):  # Создает окно статистики, отображающее статистику игры.
         with open("logs.txt", "r") as logs:
             text = logs.read()
-            list_game_time = re.findall(r":(\w+)", text)
-            list_game_result = re.findall(r"-(\w+)", text)
+            list_game_time = findall(r":(\w+)", text)
+            list_game_result = findall(r"-(\w+)", text)
         time = 0
         for i in list_game_time:
             time += int(i)
